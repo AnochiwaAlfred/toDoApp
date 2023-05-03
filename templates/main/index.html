@@ -19,8 +19,9 @@
 
 <div class="row mt-4">
     <div class="col">
+        <h3>Incomplete Tasks</h3>
         <ul class="list-group">
-            {% for item in todo_items %}
+            {% for item in todo_items_not_completed %}
                 <li class="list-group-item ">
                     {{item.text}}
                     <form action="delete_todo/{{item.id}}" action="post" class="float-end">
@@ -35,8 +36,25 @@
             {% endfor %}
         </ul>
     </div>
+
+    <div class="col">
+        <h3>Completed Tasks </h3>
+        <ul class="list-group">
+            {% for item in todo_items_completed %}
+                <li class="list-group-item bg-dark text-light">
+                    {{item.text}}
+                    <form action="delete_todo/{{item.id}}" action="post" class="float-end">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Delete</button>
+                    </form>
+                    <form action="incomplete_todo/{{item.id}}" action="post" class="clear-both float-end">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-primary me-2 " style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark Incomplete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
   
 {% endblock content %}
-
-list-group-item-success
