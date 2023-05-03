@@ -6,8 +6,12 @@ from .models import Todo
 # Create your views here.
 
 def home(request):
-    todo_items = Todo.objects.all().order_by('added_date')
-    context = {"todo_items":todo_items}
+    todo_items_not_completed = Todo.objects.filter(completed=False).order_by('added_date')
+    todo_items_completed = Todo.objects.filter(completed=True).order_by('added_date')
+    context = {
+        "todo_items_not_completed":todo_items_not_completed,
+        "todo_items_completed":todo_items_completed
+          }
     return render(request, 'main/index.html', context)
 
 def base(request):
@@ -29,11 +33,13 @@ def delete_todo(request, todo_id):
 def completed_todo(request, todo_id):
     print(todo_id)
     item = Todo.objects.get(id=todo_id)
-    if item.completed == True:
-        item.completed = False
-        # item.input_tag(attrs={'class':'disabled'})
-        
-    else:
-        item.completed = True
+    item.completed = True
+    item.save()
+    return redirect('/')
+
+def incomplete_todo(request, todo_id):
+    print(todo_id)
+    item = Todo.objects.get(id=todo_id)
+    item.completed = False
     item.save()
     return redirect('/')
