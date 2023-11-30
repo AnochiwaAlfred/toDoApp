@@ -18,7 +18,7 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col">
+    <div class="col-lg-6 col-sm-12">
         <h3>Incomplete Tasks</h3>
         <ul class="list-group">
             {% for item in todo_items_not_completed %}
@@ -30,6 +30,10 @@
                     </form>
                     <form action="completed_todo/{{item.id}}" action="post" class="clear-both float-end">
                         {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-warning me-2 " style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Edit</button>
+                    </form>
+                    <form action="completed_todo/{{item.id}}" action="post" class="clear-both float-end">
+                        {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-success me-2 " style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark Completed</button>
                     </form>
                 </li>
@@ -37,7 +41,7 @@
         </ul>
     </div>
 
-    <div class="col">
+    <div class="col-lg-6 col-sm-12">
         <h3>Completed Tasks </h3>
         <ul class="list-group">
             {% for item in todo_items_completed %}

@@ -6,8 +6,8 @@ from .models import Todo
 # Create your views here.
 
 def home(request):
-    todo_items_not_completed = Todo.objects.filter(completed=False).order_by('added_date')
-    todo_items_completed = Todo.objects.filter(completed=True).order_by('added_date')
+    todo_items_not_completed = Todo.objects.filter(completed=False).order_by('created')
+    todo_items_completed = Todo.objects.filter(completed=True).order_by('created')
     context = {
         "todo_items_not_completed":todo_items_not_completed,
         "todo_items_completed":todo_items_completed
@@ -22,7 +22,7 @@ def add_todo(request):
     # print(current_date)
     current_date = timezone.now()
     content = request.POST['content']
-    Todo.objects.create(text =content, added_date=current_date)
+    Todo.objects.create(text =content, created=current_date)
     return redirect('/')
 
 def delete_todo(request, todo_id):

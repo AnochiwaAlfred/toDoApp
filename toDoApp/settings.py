@@ -26,10 +26,44 @@ SECRET_KEY = 'django-insecure-d_z(^%mp198vg40as++e4c32t)(fptfh6xqat#3e2*$uz%(5xk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    # match localhost with any port
+    r"^http:\/\/localhost:*([0-9]+)?$",
+    r"^https:\/\/localhost:*([0-9]+)?$",
+    r"^https:\/\/benji-web-app\.web\.app$" r"^https:\/\/benji-web-app\.web\.app\/#\/$",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://benji-web-app.web.app",
+    "http://127.0.0.1:3000"
+]
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
 
 
 # Application definition
+AUTH_USER_MODEL = "users.CustomUser"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,6 +73,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'users',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'toDoApp.urls'
