@@ -5,6 +5,7 @@ from ninja.security import HttpBearer
 import pyotp
 from plugins.generate_otp import generate_otp
 from users.models import *
+from users.models.clients import Client as ClientAuth
 from schemas.auth import *
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth import authenticate
@@ -17,7 +18,7 @@ import smtplib, ssl
 from email.message import EmailMessage
 from google_auth_oauthlib.flow import Flow
 from google_auth_oauthlib import flow as small_flow
-from  google.auth.transport.requests import AuthorizedSession
+from google.auth.transport.requests import AuthorizedSession
 
 
 router = Router(tags=["Authentication"])
@@ -334,10 +335,10 @@ def reset_forgot_password(request, email:str, otp:str, password1:str, password2:
 #     else:return {"Message":"User does not match."}
 
 
-@router.post("/logout")
-def logout(request):
-    auth = request.auth
-    user = CustomUser.objects.all().filter(token=auth)
+@router.post("/logout/{token}")
+def logout(request, token):
+    # auth = request
+    user = CustomUser.objects.all().filter(token=token)
     user.update(**{"token": "", "key": ""})
     return {
         "message": "User Logged Out; You can sign in again using your username and password."
@@ -418,11 +419,11 @@ def login_user(request, email: str, password: str):
                 }
             )
             # CustomUser.objects.all().filter(id=user.id).update(**hh)
-            user2 = CustomUser.objects.all().filter(id=user.id)
+            user2 = ClientAuth.objects.all().filter(id=user.id)
             user2[0].token=access_token
             user.save()
             print(access_token)
-            return {"access_token": access_token, "user_id":user.id}
+            return {"access_token": access_token, "user_id":user.id, "username":user2[0].username, "email":user2[0].email, "image":user2[0].image.url}
             # return {"access_token": hh.get("token")}
         else:
             return {"error": "Invalid credentials"}

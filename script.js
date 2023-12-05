@@ -1,24 +1,39 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var userDropdown = document.getElementById("userDropdown");
-    var loginRegisterLink = document.getElementById("loginRegisterLink");
-    userDropdown.style.display = "none"
+var userDropdown = document.getElementById("userDropdown");
+var loginRegisterLink = document.getElementById("loginRegisterLink");
+var userLoggedIn = false; 
 
-    var userLoggedIn = false; 
-    function updateUserUI(){
-        if (userLoggedIn) {
-            userDropdown.style.display = "flex";
-            loginRegisterLink.style.display = "none";
-        } else {
-            userDropdown.style.display = "none";
-            loginRegisterLink.style.display = "block";
-        }
+function updateUserUI(){
+    // console.log("Updating UI. userLoggedIn:", userLoggedIn);
+    // console.log("Updating UI:", userDropdown);
+    // console.log("Updating UI:", loginRegisterLink);
+    if (userLoggedIn) {
+        userDropdown.style.display = "flex";
+        loginRegisterLink.style.display = "none";
+        loginRegisterLink.classList.remove('d-flex')
+        var clientUsername = document.getElementById("clientUsername");
+        var userImage = document.getElementById("userImage");
+        const storedUsername = localStorage.getItem('username');
+        const storedImage = localStorage.getItem('image');
+
+        clientUsername.innerHTML = storedUsername
+        imagePath = `http://127.0.0.1:8000${storedImage}`
+        userImage.src = imagePath
+        alert(imagePath)
+        console.log(imagePath)
+    } else {
+        userDropdown.style.display = "none";
+        loginRegisterLink.style.display = "block";
+        loginRegisterLink.classList.add('d-flex')
     }
+}
+    updateUserUI();
 
+document.addEventListener("DOMContentLoaded", function () {
+    // userDropdown.style.display = "none"
     const storedToken = localStorage.getItem('access_token');
     if (storedToken) {
         userLoggedIn = true;
     }
-
     // Call the function to update UI
     updateUserUI();
 
@@ -31,17 +46,20 @@ document.getElementById('loginButton').addEventListener('click', async (event) =
             method: 'POST',
         });
         if (response.ok) {
-            const { user_id, access_token } = await response.json();
+            const { user_id, access_token, username, email, image } = await response.json();
             if (access_token){
                 userLoggedIn = true
+                updateUserUI()
                 localStorage.setItem('access_token', access_token);
                 localStorage.setItem('user_id', user_id);
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
+                localStorage.setItem('image', image);
+
                 console.log('Logged in successfully:', {
                     "user_id":user_id, "access_token":access_token
                 });
-                updateUserUI()
                 window.location.href = 'index.html';
-                console.log(userLoggedIn)
             }else{
                 console.error('Login failed');
             }
@@ -52,6 +70,10 @@ document.getElementById('loginButton').addEventListener('click', async (event) =
         console.error('Error during login:', error);
     }
 });
+
+
+
+
 });
 
 
@@ -59,8 +81,33 @@ document.getElementById('loginButton').addEventListener('click', async (event) =
 document.addEventListener("DOMContentLoaded", function () {
 
 
+
+
+document.getElementById('logout').addEventListener('click', async (event) => {
+    event.preventDefault(); 
+    try {
+        const storedToken = localStorage.getItem('access_token');
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/auth/logout/${storedToken}`, {
+            method: 'POST',
+        });
+        if (response.ok) {
+            userLoggedIn = false
+            updateUserUI()
+            localStorage.clear();
+            console.log('Logged out successfully');
+            window.location.href = 'login.html';
+        } else {
+            console.error('Logout failed');
+        }
+    } catch (error) {
+        console.error('Error during logout:', error);
+    }
+});
+
+
 // Fetch incomplete tasks
-fetch('http://127.0.0.1:8000/api/v1/todos/client/1/list_incomplete_todos')
+const storedID = localStorage.getItem('user_id');
+fetch(`http://127.0.0.1:8000/api/v1/todos/client/${storedID}/list_incomplete_todos`)
     .then(response => response.json())
     .then(data => {
         const incompleteTasksList = document.getElementById('incompleteTasksList');
@@ -131,7 +178,8 @@ fetch('http://127.0.0.1:8000/api/v1/todos/client/1/list_incomplete_todos')
 
 
 // Fetch completed tasks
-fetch('http://127.0.0.1:8000/api/v1/todos/client/1/list_client_completed_todos')
+// const storedID = localStorage.getItem('user_id');
+fetch(`http://127.0.0.1:8000/api/v1/todos/client/${storedID}/list_client_completed_todos`)
     .then(response => response.json())
     .then(data => {
         const completedTasksList = document.getElementById('completedTasksList');
@@ -285,7 +333,6 @@ function deleteHandler(event) {
 }
 // const storedToken = localStorage.getItem('access_token')
 // const storedId = localStorage.getItem('user_id')
-
 
 
 
