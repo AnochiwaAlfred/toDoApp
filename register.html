@@ -48,25 +48,30 @@
             <hr style="border: 1px solid rgba(128, 128, 128, 0.426)(128, 128, 128, 0.426);">
             <form>
                 <div class="mb-2">
-                  <label for="email" class="form-label">Email address</label>
-                  <input type="email" class="form-control form-control-sm border-0 text-light" style="background-color: rgba(255, 255, 255, 0.101);" id="registerEmailInput" aria-describedby="emailHelp">
+                  <label for="email" class="form-label">Email Address:</label>
+                  <input type="email" class="form-control form-control-sm border-0 text-light" required style="background-color: rgba(255, 255, 255, 0.101);" id="registerEmailInput" aria-describedby="emailHelp">
                 </div>
                 <div class="mb-2">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control form-control-sm border-0 text-light" style="background-color: rgba(255, 255, 255, 0.101);" id="registerUsernameInput" aria-describedby="emailHelp">
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" class="form-control form-control-sm border-0 text-light" required style="background-color: rgba(255, 255, 255, 0.101);" id="registerUsernameInput" aria-describedby="emailHelp">
                 </div>
                 <div class="mb-2">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="text" class="form-control form-control-sm border-0 text-light" style="background-color: rgba(255, 255, 255, 0.101)" id="registerPhoneInput" aria-describedby="emailHelp">
+                    <label for="phone" class="form-label">Phone:</label>
+                    <input type="text" class="form-control form-control-sm border-0 text-light" required style="background-color: rgba(255, 255, 255, 0.101)" id="registerPhoneInput" aria-describedby="emailHelp">
                 </div>
                 <div class="mb-2">
-                  <label for="inputPassword" class="form-label">Password</label>
-                  <input type="password" class="form-control form-control-sm border-0 text-light" style="background-color: rgba(255, 255, 255, 0.101);" id="registerPasswordInput">
+                  <label for="registerPasswordInput" class="form-label">Password:</label>
+                  <input type="password" class="form-control form-control-sm border-0 text-light" required style="background-color: rgba(255, 255, 255, 0.101);" id="registerPasswordInput">
                 </div>
                 <div class="mb-2">
+                  <label for="confirmPasswordInput" class="form-label">Confirm  Password:</label>
+                  <input type="password" class="form-control form-control-sm border-0 text-light" required style="background-color: rgba(255, 255, 255, 0.101);" id="registerConfirmPasswordInput">
+                </div>
+<!--                 <div class="mb-2">
                     <label for="inputImage" class="form-label">Profile Image</label>
                     <input class="form-control border-0 form-control-sm" id="formFileSm" type="file" style="background-color: rgba(255, 255, 255, 0.101);" id="registerImageInput">
-                </div>
+                </div> -->
+                <span class="small">Have an account? <a href="login.html" class="text-decoration-none text-warning">Login.</a></span>
                 <button type="submit" class="btn btn-sm btn-primary float-end" id="registerButton">Register</button>
               </form>
         </div>
@@ -79,6 +84,7 @@
             userLoggedIn = true;
             window.location.href = 'index.html';
         }
+
 </script>
 <script src="script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>

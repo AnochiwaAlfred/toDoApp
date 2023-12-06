@@ -66,13 +66,19 @@ def register_user_with_email(
     request,
     password: str,
     passwordConfirm: str,
-    user_data: AuthUserRegistrationSchema = FormEx(...),
+    # user_data: ClientRegistrationSchema = FormEx(...),
+    phone:str,
+    email:str,
+    username
 ):
-    user = CustomUser.objects.create(**user_data.dict())
-    if password==passwordConfirm:
-        user.set_password(password)
-        user.save()
-    return {"Message": f"Registration successful. ID --> {user.id}"}
+    # user = Client.objects.create(**user_data.dict())
+    # user = Client.objects.create(email=email, username=username, phone=phone)
+    # if password==passwordConfirm:
+    #     user.set_password(password)
+    #     user.save()
+    print( {"username":username, "email":email, "message": f"Registration successful. ID --> {username}"})
+    return {"username":username, "email":email, "message": f"Registration successful. ID --> {username}"}
+    # return {"Message": f"Registration successful. ID --> {user.id}"}
 
 
 @router.post("/register-via-google/", auth=None)
@@ -423,7 +429,12 @@ def login_user(request, email: str, password: str):
             user2[0].token=access_token
             user.save()
             print(access_token)
-            return {"access_token": access_token, "user_id":user.id, "username":user2[0].username, "email":user2[0].email, "image":user2[0].image.url}
+
+            image_url = request.build_absolute_uri(user2[0].image.url)
+            print(image_url)
+
+
+            return {"access_token": access_token, "user_id":user.id, "username":user2[0].username, "email":user2[0].email, "image":image_url}
             # return {"access_token": hh.get("token")}
         else:
             return {"error": "Invalid credentials"}

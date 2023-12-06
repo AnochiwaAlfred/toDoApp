@@ -2,6 +2,14 @@ var userDropdown = document.getElementById("userDropdown");
 var loginRegisterLink = document.getElementById("loginRegisterLink");
 var userLoggedIn = false; 
 
+
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
+
 function updateUserUI(){
     // console.log("Updating UI. userLoggedIn:", userLoggedIn);
     // console.log("Updating UI:", userDropdown);
@@ -9,24 +17,37 @@ function updateUserUI(){
     if (userLoggedIn) {
         userDropdown.style.display = "flex";
         loginRegisterLink.style.display = "none";
-        loginRegisterLink.classList.remove('d-flex')
+        loginRegisterLink.classList.remove('d-flex');
         var clientUsername = document.getElementById("clientUsername");
         var userImage = document.getElementById("userImage");
         const storedUsername = localStorage.getItem('username');
         const storedImage = localStorage.getItem('image');
 
-        clientUsername.innerHTML = storedUsername
-        imagePath = `http://127.0.0.1:8000${storedImage}`
-        userImage.src = imagePath
-        alert(imagePath)
-        console.log(imagePath)
+        clientUsername.innerHTML = toTitleCase(storedUsername);
+        // imagePath = `http://127.0.0.1:8000${storedImage}`;
+        // userImage.src = storedImage;
+        userImage.src = 'https://icons.veryicon.com/png/o/miscellaneous/indata/user-circle-1.png';
+
+        console.log(storedImage);
+
+
+        // console.log(imagePath);
     } else {
         userDropdown.style.display = "none";
         loginRegisterLink.style.display = "block";
-        loginRegisterLink.classList.add('d-flex')
+        loginRegisterLink.classList.add('d-flex');
     }
 }
+
+function updateUserUI2(){
+    window.location.href = 'index.html';
     updateUserUI();
+}
+
+function callLoginPage(){
+    window.location.href = 'login.html';
+    updateUserUI();
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     // userDropdown.style.display = "none"
@@ -37,41 +58,71 @@ document.addEventListener("DOMContentLoaded", function () {
     // Call the function to update UI
     updateUserUI();
 
-document.getElementById('loginButton').addEventListener('click', async (event) => {
-    event.preventDefault(); 
-    const email = document.getElementById('emailInput').value;
-    const password = document.getElementById('passwordInput').value;
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/auth/login?email=${email}&password=${password}`, {
-            method: 'POST',
-        });
-        if (response.ok) {
-            const { user_id, access_token, username, email, image } = await response.json();
-            if (access_token){
-                userLoggedIn = true
-                updateUserUI()
-                localStorage.setItem('access_token', access_token);
-                localStorage.setItem('user_id', user_id);
-                localStorage.setItem('username', username);
-                localStorage.setItem('email', email);
-                localStorage.setItem('image', image);
+    document.getElementById('loginButton').addEventListener('click', async (event) => {
+        event.preventDefault(); 
+        const email = document.getElementById('emailInput').value;
+        const password = document.getElementById('passwordInput').value;
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/auth/login?email=${email}&password=${password}`, {
+                method: 'POST',
+            });
+            if (response.ok) {
+                const { user_id, access_token, username, email, image } = await response.json();
+                if (access_token){
+                    userLoggedIn = true;
+                    localStorage.setItem('access_token', access_token);
+                    localStorage.setItem('user_id', user_id);
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('email', email);
+                    localStorage.setItem('image', image);
+                    updateUserUI2();
 
-                console.log('Logged in successfully:', {
-                    "user_id":user_id, "access_token":access_token
-                });
-                window.location.href = 'index.html';
-            }else{
+                    console.log('Logged in successfully:', {
+                        "user_id":user_id, "access_token":access_token
+                    });
+                    window.location.href = 'index.html';
+                }else{
+                    console.error('Login failed');
+                }
+            } else {
                 console.error('Login failed');
             }
-        } else {
-            console.error('Login failed');
+        } catch (error) {
+            console.error('Error during login:', error);
         }
-    } catch (error) {
-        console.error('Error during login:', error);
-    }
-});
+    });
 
 
+    
+
+    document.getElementById('registerButton').addEventListener('click', async (event) => {
+        event.preventDefault();
+        const registerEmailInput = document.getElementById('registerEmailInput').value;
+        const registerPhoneInput = document.getElementById('registerPhoneInput').value;
+        const registerUsernameInput = document.getElementById('registerUsernameInput').value;
+        const registerPasswordInput = document.getElementById('registerPasswordInput').value;
+        const registerConfirmPasswordInput = document.getElementById('registerConfirmPasswordInput').value;
+        // Check if the todo content is not empty
+        if (registerPasswordInput === registerConfirmPasswordInput) {
+            // Call the endpoint to create a user object
+            const response = await fetch(`'http://127.0.0.1:8000/api/v1/auth/register-via-email/?password=${registerPasswordInput}&passwordConfirm=${registerConfirmPasswordInput}&phone=${registerPhoneInput}&email=${registerEmailInput}&username=${registerUsernameInput}`, {
+                method: 'POST',
+            })
+
+            if (response.ok) {
+                const { username, email, message } = await response.json();
+                console.log('User Created successfully!');
+                // callLoginPage()
+
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // location.reload();
+        } else {
+            // Handle non matching passwords (optional)
+            console.error('Passwords do not match.');
+        }
+    });
 
 
 });
@@ -79,6 +130,7 @@ document.getElementById('loginButton').addEventListener('click', async (event) =
 
 
 document.addEventListener("DOMContentLoaded", function () {
+
 
 
 
@@ -330,9 +382,20 @@ function deleteHandler(event) {
         }
         
     });
+
+
+
+
+
+
+
+
+
 }
 // const storedToken = localStorage.getItem('access_token')
 // const storedId = localStorage.getItem('user_id')
+
+
 
 
 
