@@ -168,7 +168,7 @@ fetch(`http://127.0.0.1:8000/api/v1/todos/client/${storedID}/list_incomplete_tod
             listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
             listItem.innerHTML = `
                 <span class="" id="text-${item.id}">${item.text}</span>
-                <div class="d-flex justify-content-between ">
+                <div class="d-flex items-center justify-content-between ">
                         <button type="submit" class="btn btn-sm  btn-success mark-completed-btn"  data-item-id="${item.id}">Mark Completed</button>
 
 
@@ -392,12 +392,6 @@ function deleteHandler(event) {
 
 
 }
-// const storedToken = localStorage.getItem('access_token')
-// const storedId = localStorage.getItem('user_id')
-
-
-
-
 
 
 
@@ -407,7 +401,6 @@ function deleteHandler(event) {
 
 
 
-// https://www.16personalities.com/profiles/3aa7a1ecc1814
 
 
 

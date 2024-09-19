@@ -39,7 +39,6 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/benji-web-app\.web\.app$" r"^https:\/\/benji-web-app\.web\.app\/#\/$",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://benji-web-app.web.app",
     "http://127.0.0.1:3000"
 ]
 CORS_ALLOW_METHODS = (
