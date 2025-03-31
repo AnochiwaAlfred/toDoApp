@@ -1,5 +1,5 @@
 from ninja import Schema, File
-from typing import List
+from typing import List, Optional
 from datetime import date
 
 
@@ -9,6 +9,8 @@ class AuthUserRegistrationSchema(Schema):
     email:str
     username:str
     phone:str
+    password:str
+    passwordConfirm:str
 
 class AuthUserRetrievalSchema(Schema):
     id:int=None
@@ -21,5 +23,21 @@ class AuthUserRetrievalSchema(Schema):
     
     
 class UserLoginSchema(Schema):
-    email: str
+    username_or_email: str
     password: str
+
+
+# Schema for registration response
+class TokenResponse(Schema):
+    id: str
+    username: str
+    token: str
+    
+class RefreshTokenSchema(Schema):
+    refresh_token: str
+
+
+class ChangePasswordSchema(Schema):
+    old_password: Optional[str]
+    new_password: Optional[str]
+    confirm_new_password: Optional[str]

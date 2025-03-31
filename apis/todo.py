@@ -1,79 +1,92 @@
-from ninja import FormEx, Router
-from django.db.models import Q
+import uuid
 from typing import List, Union
+
+from django.db.models import Q
+from django.http import JsonResponse
+
+from ninja import FormEx, Router
+from ninja.errors import HttpError
+
+from .auth2 import JWTAuth
 from schemas.todo import *
 from schemas.clients import *
 from main.models import *
 from users.models import *
 
 
-
 router = Router(tags=["Todo Endpoints"])
+auth = JWTAuth()
 
-@router.get('/client/{user_id}/list_todos', response=List[ToDoRetrievalSchema])
+
+@router.get('/client/{user_id}/list_todos', auth=auth, response=Union[List[ToDoRetrievalSchema], dict])
 def list_client_todos(request, user_id):
     todos = Todo.objects.filter(user_id=user_id)
+    if not todos.exists():
+        return JsonResponse({"error": "No todos found for this client"}, status=404)
     return todos
 
-@router.get('/client/{user_id}/list_client_completed_todos', response=List[ToDoRetrievalSchema])
+@router.get('/client/{user_id}/list_client_completed_todos', auth=auth, response=Union[List[ToDoRetrievalSchema], dict])
 def list_client_completed_todos(request, user_id):
     todos = Todo.objects.filter(user_id=user_id, completed=True)
+    if not todos.exists():
+        return JsonResponse({"error": "No completed todos found for this client"}, status=404)
     return todos
 
-@router.get('/client/{user_id}/list_incomplete_todos', response=List[ToDoRetrievalSchema])
+@router.get('/client/{user_id}/list_incomplete_todos', auth=auth, response=Union[List[ToDoRetrievalSchema], dict])
 def list_client_incomplete_todos(request, user_id):
     todos = Todo.objects.filter(user_id=user_id, completed=False)
+    if not todos.exists():
+        return JsonResponse({"error": "No incomplete todos found for this client"}, status=404)
     return todos
 
-@router.post('/client/{user_id}/todo/create/{text}', response=Union[str, ToDoRetrievalSchema])
-def create_todo(request, user_id, text:str):
-    if text != "":
-        todo = Todo.objects.create(user_id=user_id, text=text)
-        return todo
-    return f"Error: Empty text field"
-        
+@router.post('/client/{user_id}/todo/create', auth=auth, response=Union[ToDoRetrievalSchema, dict])
+def create_todo(request, user_id: int, data: ToDoRegistrationSchema = FormEx(...)):
+    if not data.text:
+        return JsonResponse({"error": "Text field must not be empty"}, status=400)
+    todo = Todo.objects.create(user_id=user_id, text=data.text)
+    return todo
 
-@router.put('/todo/{todo_id}/update/{text}', response=Union[str, ToDoRetrievalSchema])
-def update_todo(request, todo_id, text:str):
-    todoInst = Todo.objects.filter(id=todo_id)
-    if todoInst.exists():
-        todo = todoInst[0]
-        # if text != "":
-        print(text)
-        print(todo.text)
-        todo.text=text
-        todo.save()
-        return todo
-        # return f"Error: Empty text field"
-    return f"Todo with ID {todo_id} does not exist"
 
-@router.put('/todo/{todo_id}/mark_completed', response=Union[str, ToDoRetrievalSchema])
+
+@router.put('/todo/{todo_id}/update', auth=auth, response=Union[ToDoRetrievalSchema, dict])
+def update_todo(request, todo_id: uuid.UUID, data: ToDoUpdateSchema): 
+    todo = Todo.objects.filter(id=todo_id).first()
+    if not todo:
+        return JsonResponse({"error": f"Todo with ID {todo_id} does not exist"}, status=404)
+    
+    if not data.text:
+        return JsonResponse({"error": "Text field must not be empty"}, status=400)
+    
+    todo.text = data.text
+    todo.save()
+    return todo
+
+
+@router.put('/todo/{todo_id}/mark_completed', auth=auth, response=Union[ToDoRetrievalSchema, dict])
 def mark_todo_completed(request, todo_id):
-    todoInst = Todo.objects.filter(id=todo_id)
-    if todoInst.exists():
-        todo = todoInst[0]
-        todo.completed = True
-        todo.save()
-        return todo
-    return f"Todo with ID {todo_id} does not exist"
+    todo = Todo.objects.filter(id=todo_id).first()
+    if not todo:
+        return JsonResponse({"error": f"Todo with ID {todo_id} does not exist"}, status=404)
     
-@router.put('/todo/{todo_id}/mark_incomplete', response=Union[str, ToDoRetrievalSchema])
+    todo.completed = True
+    todo.save()
+    return todo
+
+@router.put('/todo/{todo_id}/mark_incomplete', auth=auth, response=Union[ToDoRetrievalSchema, dict])
 def mark_todo_incomplete(request, todo_id):
-    todoInst = Todo.objects.filter(id=todo_id)
-    if todoInst.exists():
-        todo = todoInst[0]
-        todo.completed = False
-        todo.save()
-        return todo
-    return f"Todo with ID {todo_id} does not exist"
-
-
+    todo = Todo.objects.filter(id=todo_id).first()
+    if not todo:
+        return JsonResponse({"error": f"Todo with ID {todo_id} does not exist"}, status=404)
     
-@router.delete('/todo/{todo_id}/delete', response=Union[str, ToDoRetrievalSchema])
+    todo.completed = False
+    todo.save()
+    return todo
+
+@router.delete('/todo/{todo_id}/delete', auth=auth, response=Union[dict, dict])
 def delete_todo(request, todo_id):
-    todoInst = Todo.objects.filter(id=todo_id)
-    if todoInst.exists():
-        todo = todoInst[0]
-        todo.delete() 
-        return f"Todo deleted successfullt"
-    return f"Todo with ID {todo_id} does not exist"
+    todo = Todo.objects.filter(id=todo_id).first()
+    if not todo:
+        return JsonResponse({"error": f"Todo with ID {todo_id} does not exist"}, status=404)
+    
+    todo.delete()
+    return JsonResponse({"message": "Todo deleted successfully"}, status=200)

@@ -6,13 +6,15 @@ from datetime import date
 
 
 class ClientRegistrationSchema(Schema):
-    email:str
-    username:str
+    email:str=None
+    username:str=None
     phone:str=None
+    password:str=None
+    passwordConfirm:str=None
 
 class ClientRetrievalSchema(Schema):
     id:int=None
     email:str=None
     username:str=None
     phone:str=None
-    image:str=None
+    # image:str=None

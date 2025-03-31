@@ -2,6 +2,7 @@ from ninja import Schema
 import uuid
 from schemas.clients import *
 from datetime import date
+from typing import Optional
 
 
 class ToDoRegistrationSchema(Schema):
@@ -13,4 +14,6 @@ class ToDoRetrievalSchema(Schema):
     text:str=None
     completed:bool=None
     user:ClientRetrievalSchema=None
-    
+
+class ToDoUpdateSchema(Schema):
+    text: Optional[str]

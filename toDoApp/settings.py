@@ -39,8 +39,9 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/benji-web-app\.web\.app$" r"^https:\/\/benji-web-app\.web\.app\/#\/$",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://benji-web-app.web.app",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5500",
+    "https://ktss1fzp-5500.uks1.devtunnels.ms"
 ]
 CORS_ALLOW_METHODS = (
     "DELETE",
@@ -50,6 +51,8 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
+
+# CSRF_COOKIE_SECURE = False
 
 CORS_ALLOW_HEADERS = (
     "accept",
